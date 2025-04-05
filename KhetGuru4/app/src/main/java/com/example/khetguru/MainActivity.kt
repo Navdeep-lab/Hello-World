@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModelProvider
+import com.example.khetguru.ui.AuthViewModel
 import com.example.khetguru.ui.MarketPriceViewModel
 import com.example.khetguru.ui.Navigation
 import com.example.khetguru.ui.WeatherViewModel
@@ -21,6 +22,7 @@ import com.google.firebase.FirebaseApp
 class MainActivity : ComponentActivity() {
     private val marketPriceViewModel: MarketPriceViewModel by viewModels()
     private lateinit var weatherViewModel: WeatherViewModel
+    val authViewModel: AuthViewModel by viewModels()
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +37,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             KhetGuruTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
-                    Navigation(marketPriceViewModel,weatherViewModel) // ✅ Use Navigation() directly, no need to pass it to DashboardScreen
+                    Navigation(marketPriceViewModel,weatherViewModel,authViewModel) // ✅ Use Navigation() directly, no need to pass it to DashboardScreen
                 }
             }
         }

@@ -145,7 +145,7 @@ fun CropIdentificationScreen() {
             return
         }
 
-        val apiKey = "RYUpxEtOoQUlzINbV10fuyTJucuSGRkm1ruolFsfqT0SowvW62"
+        val apiKey = "47dVzsq0CqYLuGVFZMa9m4PG3MMKRwRGYhmEHeC3bCmQwDN634"
         val client = OkHttpClient()
         val mediaType = "application/json".toMediaType()
         val DecodeImage = "data:image/jpeg;base64,$base64Image"

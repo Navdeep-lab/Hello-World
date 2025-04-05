@@ -3,11 +3,12 @@ plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.compose) apply false
+    id("com.chaquo.python") version "16.0.0" apply false
 }
 
 buildscript {
     dependencies {
-        classpath ("com.android.tools.build:gradle:8.1.2") // Use latest version
-        classpath ("com.google.gms:google-services:4.3.15") // Firebase services
+        classpath ("com.android.tools.build:gradle:8.1.4") // Use latest version
+        classpath ("com.google.gms:google-services:4.4.2") // Firebase services
     }
 }

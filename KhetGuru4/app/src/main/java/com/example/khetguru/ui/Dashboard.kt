@@ -1,5 +1,6 @@
 package com.example.khetguru.ui
 
+import ResetPass
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,12 +17,18 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,23 +49,45 @@ import com.example.khetguru.ui.theme.CropManagement
 import com.google.firebase.database.core.Context
 
 @Composable
-fun DashboardScreen(navController: NavController) {
+fun DashboardScreen(navController: NavController,authViewModel: AuthViewModel) {
+    val authState=authViewModel.authState.observeAsState()
+    LaunchedEffect(authState.value) {
+        when(authState.value){
+            is AuthState.Unauthenticated->navController.navigate("Login")
+            else->Unit
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(16.dp),
+            .padding(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Stylish App Name
         Spacer(modifier = Modifier.height(20.dp))
-        Text(
-            text = "\uD83D\uDE9CKhetGuru",
-            fontSize = 45.sp,
-            fontWeight = FontWeight.ExtraBold,
-            color = Color(0xFF388E3C), // Deep Green
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        Row (modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly) {
+            Text(
+                text = "\uD83D\uDE9CKhetGuru",
+                fontSize = 45.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color(0xFF388E3C), // Deep Green
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+            IconButton(
+                onClick = {
+                    authViewModel.signout()
+                },
+            ) {
+                Icon(
+                    Icons.Filled.ExitToApp,
+                    contentDescription = "",
+                    modifier = Modifier.size(70.dp),
+                    tint = Color(0xFF388E3C)
+                )
+            }
+        }
 
         // First Row
         Row(
@@ -71,19 +100,19 @@ fun DashboardScreen(navController: NavController) {
             Card(
                 modifier = Modifier
                     .width(150.dp)
-                    .height(100.dp)
-                ,colors = CardDefaults.cardColors(Color(0xFFBBDEFB)),
+                    .height(100.dp), colors = CardDefaults.cardColors(Color(0xFFBBDEFB)),
                 shape = RoundedCornerShape(16.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                 onClick = { navController.navigate("weather") }
             ) {
-                Row(modifier = Modifier.padding(10.dp)){
+                Row(modifier = Modifier.padding(10.dp)) {
                     Text(
-                        "     Weather", style = androidx.compose.ui.text.TextStyle(
+                        "     Weather",
+                        style = androidx.compose.ui.text.TextStyle(
                             fontWeight = FontWeight.Bold,
                             fontSize = 22.sp
                         ),
-                        )
+                    )
                 }
                 Column(
                     modifier = Modifier
@@ -91,15 +120,16 @@ fun DashboardScreen(navController: NavController) {
 //                        .padding(5.dp),
                     horizontalAlignment = Alignment.CenterHorizontally, // Centers content horizontally
                     verticalArrangement = Arrangement.Center // Centers content vertically
-                ){ Text(
-                    "🌤️ \uD83C\uDF27\uFE0F", // Emojis centered below the text
-                    fontSize = 40.sp // Increases the size of the emojis
-                )}
+                ) {
+                    Text(
+                        "🌤️ \uD83C\uDF27\uFE0F", // Emojis centered below the text
+                        fontSize = 40.sp // Increases the size of the emojis
+                    )
+                }
             }
-            Card( modifier = Modifier
+            Card(modifier = Modifier
                 .width(150.dp)
-                .height(100.dp)
-                ,colors = CardDefaults.cardColors(Color(0xFFDECFCB)),
+                .height(100.dp), colors = CardDefaults.cardColors(Color(0xFFDECFCB)),
                 shape = RoundedCornerShape(16.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                 onClick = { navController.navigate("soil_health") }
@@ -118,10 +148,12 @@ fun DashboardScreen(navController: NavController) {
 //                        .padding(5.dp),
                     horizontalAlignment = Alignment.CenterHorizontally, // Centers content horizontally
                     verticalArrangement = Arrangement.Center // Centers content vertically
-                ){ Text(
-                    "\uD83C\uDF31", // Emojis centered below the text
-                    fontSize = 40.sp // Increases the size of the emojis
-                )}
+                ) {
+                    Text(
+                        "\uD83C\uDF31", // Emojis centered below the text
+                        fontSize = 40.sp // Increases the size of the emojis
+                    )
+                }
             }
 
         }
@@ -136,8 +168,7 @@ fun DashboardScreen(navController: NavController) {
             Card(
                 modifier = Modifier
                     .width(150.dp)
-                    .height(100.dp)
-                ,colors = CardDefaults.cardColors(Color(0xFFC8E6C9)),
+                    .height(100.dp), colors = CardDefaults.cardColors(Color(0xFFC8E6C9)),
                 shape = RoundedCornerShape(16.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                 onClick = { navController.navigate("crop_updates") }
@@ -157,15 +188,16 @@ fun DashboardScreen(navController: NavController) {
 //                        .padding(5.dp),
                     horizontalAlignment = Alignment.CenterHorizontally, // Centers content horizontally
                     verticalArrangement = Arrangement.Center // Centers content vertically
-                ){ Text(
-                    "\uD83E\uDDD1\u200D\uD83C\uDF3E", // Emojis centered below the text
-                    fontSize = 40.sp // Increases the size of the emojis
-                )}
+                ) {
+                    Text(
+                        "\uD83E\uDDD1\u200D\uD83C\uDF3E", // Emojis centered below the text
+                        fontSize = 40.sp // Increases the size of the emojis
+                    )
+                }
             }
-            Card( modifier = Modifier
+            Card(modifier = Modifier
                 .width(150.dp)
-                .height(100.dp)
-                ,colors = CardDefaults.cardColors(Color(0xFFFDDEE1)),
+                .height(100.dp), colors = CardDefaults.cardColors(Color(0xFFFDDEE1)),
                 shape = RoundedCornerShape(16.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                 onClick = { navController.navigate("market_prices") }
@@ -184,10 +216,80 @@ fun DashboardScreen(navController: NavController) {
 //                        .padding(5.dp),
                     horizontalAlignment = Alignment.CenterHorizontally, // Centers content horizontally
                     verticalArrangement = Arrangement.Center // Centers content vertically
-                ){ Text(
-                    "\uD83D\uDCB0", // Emojis centered below the text
-                    fontSize = 40.sp // Increases the size of the emojis
-                )}
+                ) {
+                    Text(
+                        "\uD83D\uDCB0", // Emojis centered below the text
+                        fontSize = 40.sp // Increases the size of the emojis
+                    )
+                }
+            }
+
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    vertical = 6.dp
+                ),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Card(
+                modifier = Modifier
+                    .width(150.dp)
+                    .height(100.dp), colors = CardDefaults.cardColors(Color(0xFFA6CDD2)),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                onClick = { navController.navigate("expert_advisory") }
+
+            ) {
+                Row(modifier = Modifier.padding(10.dp)) {
+                    Text(
+                        "Expert Advisory", style = androidx.compose.ui.text.TextStyle(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                        )
+                    )
+                }
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize(),
+//                        .padding(5.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally, // Centers content horizontally
+                    verticalArrangement = Arrangement.Center // Centers content vertically
+                ) {
+                    Text(
+                        "\uD83E\uDDD1\u200D\uD83C\uDFEB", // Emojis centered below the text
+                        fontSize = 40.sp // Increases the size of the emojis
+                    )
+                }
+            }
+            Card(modifier = Modifier
+                .width(150.dp)
+                .height(100.dp), colors = CardDefaults.cardColors(Color(0xFFC7CBCB)),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                onClick = { navController.navigate("government_schemes") }
+            ) {
+                Row(modifier = Modifier.padding(10.dp)) {
+                    Text(
+                        "Govt Schemes", style = androidx.compose.ui.text.TextStyle(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp
+                        )
+                    )
+                }
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize(),
+//                        .padding(5.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally, // Centers content horizontally
+                    verticalArrangement = Arrangement.Center // Centers content vertically
+                ) {
+                    Text(
+                        "\uD83C\uDFDB\uFE0F", // Emojis centered below the text
+                        fontSize = 40.sp // Increases the size of the emojis
+                    )
+                }
             }
 
         }
@@ -247,10 +349,34 @@ fun DashboardScreen(navController: NavController) {
         MarketPriceCard(navController)
         Spacer(modifier = Modifier.height(20.dp))
 
+        Text(
+            text = "\uD83E\uDDD1\u200D\uD83C\uDFEB Expert Advisory \uD83D\uDCAC",    // Added relevant emojis
+            fontSize = 24.sp,                  // Slightly larger for emphasis
+            fontWeight = FontWeight.ExtraBold,
+            color = Color(0xFF34808A),         // Elegant earthy brown color
+            textAlign = TextAlign.Center,      // Center alignment
+            letterSpacing = 1.5.sp             // Enhances readability
+        )
 
-        // WeatherCard(navController)
+        ExpertAdvisoryCard(navController)
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Text(
+            text = "🏛️ Govt Schemes 📜",       // Added relevant emojis
+            fontSize = 24.sp,                   // Slightly larger for emphasis
+            fontWeight = FontWeight.ExtraBold,
+            color = Color(0xFF4F5050),          // Elegant earthy brown color
+            textAlign = TextAlign.Center,       // Center alignment
+            letterSpacing = 1.5.sp              // Enhances readability
+        )
+
+
+        GovtSchemesCard(navController)
+        Spacer(modifier = Modifier.height(20.dp))
+
     }
 }
+
 
 @Composable
 fun DashboardCard(title: String, subtitle: String = "", onClick: () -> Unit) {
@@ -468,6 +594,106 @@ fun SoilAnalysisCard(navController: NavController) {
     }
 }
 
+
+
+@Composable
+fun ExpertAdvisoryCard(navController: NavController) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(180.dp)
+            .padding(10.dp)
+            .clickable { navController.navigate("expert_advisory") },  // Navigate to Advisory Screen
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFA6CDD2)), // Light Blue Background
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Title with Icon
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(style = SpanStyle(color = Color(0xFF34808A), fontSize = 22.sp, fontWeight = FontWeight.Bold)) {
+                        append("🧑‍🏫 Expert Advisory")
+                    }
+                },
+                textAlign = TextAlign.Center
+            )
+
+            // Advisory Emojis
+            Text(
+                text = "💬📞🌿",  // Chat, Call, Agriculture symbol
+                fontSize = 28.sp,
+                modifier = Modifier.padding(vertical = 4.dp),
+                textAlign = TextAlign.Center
+            )
+
+            // Get Advice Button
+            Button(
+                onClick = { navController.navigate("expert_advisory") },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF34808A), contentColor = Color.White),
+                shape = RoundedCornerShape(50)
+            ) {
+                Text(text = "Get Advice", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            }
+        }
+    }
+}
+
+@Composable
+fun GovtSchemesCard(navController: NavController) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(180.dp)
+            .padding(10.dp)
+            .clickable { navController.navigate("government_schemes") },  // Navigate to Schemes Screen
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFC7CBCB)), // Light Grey Background
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Title with Icon
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(style = SpanStyle(color = Color(0xFF4F5050), fontSize = 22.sp, fontWeight = FontWeight.Bold)) {
+                        append("🏛️ Govt Schemes")
+                    }
+                },
+                textAlign = TextAlign.Center
+            )
+
+            // Icons Representing Government Benefits
+            Text(
+                text = "💡💰🌾📜",  // Light bulb (ideas), Money, Agriculture, Document
+                fontSize = 28.sp,
+                modifier = Modifier.padding(vertical = 4.dp),
+                textAlign = TextAlign.Center
+            )
+
+            // View Schemes Button
+            Button(
+                onClick = { navController.navigate("government_schemes") },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4F5050), contentColor = Color.White),
+                shape = RoundedCornerShape(50)
+            ) {
+                Text(text = "Explore Schemes", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            }
+        }
+    }
+}
+
 @Composable
 fun MarketPriceCard(navController: NavController) {
     Card(
@@ -518,12 +744,15 @@ fun MarketPriceCard(navController: NavController) {
 }
 
 
+
 @Composable
-fun Navigation(viewModel: MarketPriceViewModel,weatherViewModel: WeatherViewModel) {
+fun Navigation(viewModel: MarketPriceViewModel,weatherViewModel: WeatherViewModel,authViewModel: AuthViewModel) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "splash") {
         composable("splash") { SplashScreen(navController) }
-        composable("dashboard") { DashboardScreen(navController) }
+        composable("dashboard") {
+            DashboardScreen(navController,authViewModel)
+        }
         composable("weather") { WeatherForecastScreen(weatherViewModel) }
         composable("soil_health") {
             val context = LocalContext.current
@@ -533,6 +762,13 @@ fun Navigation(viewModel: MarketPriceViewModel,weatherViewModel: WeatherViewMode
         composable("crop_management") { CropManagement(navController) }
         composable("weather_forecast") { WeatherForecastScreen(weatherViewModel) }
         composable("saved_prices") { SavedPricesScreen(viewModel,navController) }
+        composable("step1"){Step1(navController)}
+        composable("step2"){Step2(navController)}
+        composable("login") { LoginScreen(navController, authViewModel) }
+        composable("sign") { SignScreen(navController,authViewModel) }
+        composable("resetpass") {ResetPass(navController,authViewModel) }
+        composable("expert_advisory") { ExpertAdvisoryScreen() }
+        composable("government_schemes") { GovernmentSchemesScreen(navController) }
     }
 }
 
